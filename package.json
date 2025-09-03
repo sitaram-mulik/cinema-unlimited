@@ -1,0 +1,43 @@
+{
+  "name": "cinema-unlimited",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "^5.0.4",
+    "axios": "^1.11.0",
+    "babel-preset-expo": "^13.2.3",
+    "crypto": "^1.0.1",
+    "expo": "~53.0.20",
+    "expo-av": "~15.1.7",
+    "expo-document-picker": "^13.1.6",
+    "expo-file-system": "^18.1.11",
+    "expo-router": "~5.1.4",
+    "expo-status-bar": "~2.2.3",
+    "expo-video": "~2.2.2",
+    "lucide-react-native": "^0.540.0",
+    "metro-config": "^0.83.1",
+    "nativewind": "^4.1.23",
+    "prettier-plugin-tailwindcss": "^0.5.14",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-native": "0.79.5",
+    "react-native-dotenv": "^3.4.11",
+    "react-native-reanimated": "~3.17.4",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.11.1",
+    "react-native-web": "^0.20.0",
+    "react-native-webview": "^13.16.0",
+    "tailwindcss": "^3.4.17",
+    "tus-js-client": "^1.6.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0"
+  },
+  "private": true
+}
