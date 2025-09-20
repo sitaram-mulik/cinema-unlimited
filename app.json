@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sitarammulik.cinemaunlimited"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +30,12 @@
     "plugins": [
       "expo-video",
       "expo-router"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e66a67c3-42b9-4e4b-b0be-5eccb99e8a93"
+      }
+    }
   }
 }

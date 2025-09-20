@@ -1,9 +1,9 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import BunnyPlayer from '../../components/BunnyPlayer';
-import { View } from 'lucide-react-native';
 import { CUText } from '../../components/utilities/CUText';
 import { cuAPI } from '../../config/api';
+import { buVideoStreamURL } from '../../config/constant';
 
 export default function VideoScreen() {
   const { id } = useLocalSearchParams();
@@ -15,9 +15,7 @@ export default function VideoScreen() {
       const _videoDetails = res.data.data;
       setVideoDetails(_videoDetails);
       // console.log("video -> ", _videoDetails);
-      setVideoUrl(
-        `https://iframe.mediadelivery.net/embed/${_videoDetails.library_id}/${_videoDetails.guid}?autoplay=false`
-      );
+      setVideoUrl(`${buVideoStreamURL}/${_videoDetails.guid}?autoplay=false`);
     });
   }, [id]);
 

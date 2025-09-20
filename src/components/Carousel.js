@@ -13,8 +13,9 @@ import CUError from './utilities/CUError';
 import CULoader from './utilities/CULoader';
 import { cuAPI } from '../config/api';
 import { useBURequest } from '../hooks/request';
-import { ReceiptRussianRuble } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
+import CUGradient from './utilities/CUGradient';
 
 const { width } = Dimensions.get('window');
 const ITEM_HEIGHT = width * 0.56;
@@ -92,7 +93,7 @@ export default function Carousel({ carouselCollectionId }) {
         className="px-0"
       >
         {videos.map((item, index) => {
-          const url = getThumbnailUrl(item.guid);
+          const url = getThumbnailUrl(item.guid, item.thumbnailFileName);
           return (
             <TouchableOpacity
               key={item.id?.toString() || index.toString()}
@@ -109,6 +110,7 @@ export default function Carousel({ carouselCollectionId }) {
                 resizeMode="cover"
               />
               <CUText>{item?.title}</CUText>
+              {/* <CUGradient /> */}
             </TouchableOpacity>
           );
         })}

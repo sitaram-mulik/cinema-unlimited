@@ -1,19 +1,29 @@
 import '../../global.css';
 import { StatusBar } from 'expo-status-bar';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import VideoList from '../components/VideoList';
 import Carousel from '../components/Carousel';
-import { LIST_COLLECTION_PREFIX } from '../config/constant';
 import { useBURequest, useCURequest } from '../hooks/request';
 import BUVideoList from '../components/BUVideoList';
+import {
+  RESERVED_COLL_CAROUSAL_NAME,
+  RESERVED_COLLECTION_PREFIX,
+  reservedCollections
+} from '../config/constant';
+import { useMemo } from 'react';
+import { CUContainer } from '../components/utilities/CUContainer';
+import { CUScrollContainer } from '../components/utilities/CUScrollContainer';
+import CUHeading from '../components/utilities/CUHeading';
+import { Link } from 'expo-router';
+import { CULink } from '../components/utilities/CULink';
 
 export default function App() {
   const { data: buCollectionsData } = useBURequest({
-    url: `/collections?search=${LIST_COLLECTION_PREFIX}&itemsPerPage=10`
+    url: `/collections?search=${RESERVED_COLLECTION_PREFIX}&itemsPerPage=10`
   });
 
   const { data: carouselCollection } = useBURequest({
-    url: `/collections?search=carousel&itemsPerPage=10`
+    url: `/collections?search=${RESERVED_COLL_CAROUSAL_NAME}&itemsPerPage=10`
   });
 
   const carouselCollectionId = carouselCollection?.items?.[0]?.guid;
@@ -25,27 +35,44 @@ export default function App() {
   } = useCURequest({ url: `/videos` });
 
   const recentVideos = recentVideosData?.data;
-  const buCollections = buCollectionsData?.items;
+  const buCollections = useMemo(
+    () => buCollectionsData?.items?.filter(item => !reservedCollections.includes(item.name)),
+    [buCollectionsData]
+  );
 
   return (
-    <View className="cu-home">
-      {carouselCollectionId && <Carousel carouselCollectionId={carouselCollectionId} />}
-      <VideoList
-        heading="Recently added"
-        videos={recentVideos}
-        loading={recentVideosLoading}
-        error={recentVideosError}
-      />
-      {buCollections?.map(collection => {
-        return (
-          <BUVideoList
-            key={collection?.guid}
-            collectionId={collection?.guid}
-            collectionName={collection?.name}
-          />
-        );
-      })}
-      <StatusBar style="light" />
+    <View className="cu-home flex-1">
+      <ScrollView>
+        {carouselCollectionId && <Carousel carouselCollectionId={carouselCollectionId} />}
+
+        <View className="px-6 collections">
+          {recentVideosData?.totalCount > 0 ? (
+            <>
+              <VideoList
+                heading="New"
+                videos={recentVideos}
+                loading={recentVideosLoading}
+                error={recentVideosError}
+              />
+              {buCollections?.map(collection => {
+                return (
+                  <BUVideoList
+                    key={collection?.guid}
+                    collectionId={collection?.guid}
+                    collectionName={collection?.name}
+                  />
+                );
+              })}
+            </>
+          ) : (
+            <CUHeading>
+              Please <CULink href="/create">upload</CULink> some content to get started!
+            </CUHeading>
+          )}
+        </View>
+
+        <StatusBar style="light" />
+      </ScrollView>
     </View>
   );
 }

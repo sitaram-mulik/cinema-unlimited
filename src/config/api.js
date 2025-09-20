@@ -5,14 +5,21 @@ const cuAPI = axios.create({
   baseURL: CU_BASE_URL
 });
 
-console.log('BU_BASE_URL ', BU_BASE_URL, LIBRARY_ID);
-
 const buAPI = axios.create({
   baseURL: `${BU_BASE_URL}/library/${LIBRARY_ID}`,
   headers: {
-    AccessKey: LIBRARY_API_KEY,
-    'Content-Type': 'application/json'
+    AccessKey: LIBRARY_API_KEY
   }
+});
+
+// Auto-fix headers depending on payload
+buAPI.interceptors.request.use(config => {
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']; // let Axios set it
+  } else {
+    config.headers['Content-Type'] = 'application/json';
+  }
+  return config;
 });
 
 // Add a response interceptor for cuAPI
@@ -20,7 +27,14 @@ cuAPI.interceptors.response.use(
   response => response,
   error => {
     // You can customize error handling here
-    console.error('cuAPI Error:', error);
+    if (error.response) {
+      console.log('🔴 API ERROR:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.log('🔴 NO RESPONSE:', error.request);
+    } else {
+      console.log('🔴 REQUEST SETUP ERROR:', error.message);
+    }
+
     return Promise.reject(error);
   }
 );
@@ -30,7 +44,13 @@ buAPI.interceptors.response.use(
   response => response,
   error => {
     // You can customize error handling here
-    console.log('Error message:', error.message);
+    if (error.response) {
+      console.log('🔴 API ERROR:', error.response.status, error.response.data);
+    } else if (error.request) {
+      console.log('🔴 NO RESPONSE:', error.request);
+    } else {
+      console.log('🔴 REQUEST SETUP ERROR:', error.message);
+    }
 
     return Promise.reject(error);
   }

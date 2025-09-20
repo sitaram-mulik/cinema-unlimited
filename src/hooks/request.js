@@ -47,7 +47,7 @@ export const useCURequest = ({ url, method = 'GET', payload, params }) => {
         setError(getErrorMessage(error));
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [url, method, payload, params]);
 
   return { data, loading, error };
 };

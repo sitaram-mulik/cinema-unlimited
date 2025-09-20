@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useBURequest } from '../hooks/request';
 import VideoList from './VideoList';
-import { LIST_COLLECTION_PREFIX } from '../config/constant';
+import { RESERVED_COLLECTION_PREFIX } from '../config/constant';
 
 export default function BUVideoList({ collectionId, collectionName }) {
   const {
@@ -16,7 +16,7 @@ export default function BUVideoList({ collectionId, collectionName }) {
     <VideoList
       key={collectionId}
       videos={videos}
-      heading={collectionName.split(LIST_COLLECTION_PREFIX + ' - ')}
+      heading={collectionName.split(RESERVED_COLLECTION_PREFIX + '-')}
       loading={loading}
       error={error}
     />
