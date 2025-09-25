@@ -17,8 +17,8 @@ import CULoader from './utilities/CULoader';
 import CUContentPlaceholder from './utilities/CUContentPlaceholder';
 
 const { width } = Dimensions.get('window');
-const ITEM_WIDTH = width * (isMobile ? 0.275 : 0.15); // 27.5% of screen width for each item
-const ITEM_HEIGHT = ITEM_WIDTH * (isMobile ? 3 / 2 : 2 / 3); // 2:3 portrait
+const ITEM_WIDTH = width * 0.15; // 27.5% of screen width for each item
+const ITEM_HEIGHT = ITEM_WIDTH * (9 / 16); // 2:3 portrait
 
 export default function VideoList({ heading, videos, loading, error }) {
   if (loading) {
@@ -35,7 +35,7 @@ export default function VideoList({ heading, videos, loading, error }) {
 
   return (
     <View className="mb-6">
-      <CUText className="font-bold mb-3 text-white">{heading}</CUText>
+      <CUText className="font-bold mb-3 text-lg">{heading}</CUText>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         {videos.map(item => {
           const url = getThumbnailUrl(item.guid, item.thumbnailFileName);

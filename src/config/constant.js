@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Dimensions, Platform } from 'react-native';
 import {
   CU_PRODUCT_NAME,
   CU_URL,
@@ -30,7 +30,11 @@ export const catNav = [
   { label: 'TV series', route: '/' }
 ];
 
-export const isMobile = !Platform.isTV && Platform.OS !== 'web';
+const { width } = Dimensions.get('window');
+export const CONTAINER_WIDTH = 1700;
+export const CAROUSEL_HEIGHT = 700;
+
+export const isMobile = !Platform.isTV && (Platform.OS !== 'web' || width < 768);
 
 export const isWeb = Platform.isTV || Platform.OS === 'web';
 

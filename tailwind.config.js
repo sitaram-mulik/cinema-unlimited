@@ -6,16 +6,19 @@ module.exports = {
     extend: {
       colors: {
         primary: '#FFFFFF', // primary text color
-        secondary: '#33373d',
-        tertiary: '#351b26',
+        secondary: '#0c4e54cc',
+        tertiary: '#f5c400',
         heading: '#dfa214',
-        muted: '#292929',
-        // background: '#0d0d0d', // main background color
-        background: '#00050d', // main background color
-        backgroundSecondary: '#33373d'
+        muted: '#33373d',
+        buttonColor: '#0c4e54cc',
+        background: '#08041fff', // main background color
+        backgroundSecondary: '#0c4e54cc',
+        backgroundOverlay: 'rgba(12, 78, 84, 0.9)'
       },
       fontFamily: {
-        sans: ['Inter_400Regular']
+        microgrammaMed: ['Microgramma-Medium'],
+        microgrammaBold: ['Microgramma-Bold'],
+        italic: ['Custom-Italic']
       },
       placeholderColor: {
         primary: '#FFFFFF'

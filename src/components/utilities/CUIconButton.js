@@ -4,7 +4,7 @@ import CUButton from './CUButton';
 import CUIcon from './CUICon';
 import { CUText } from './CUText';
 
-export default function CUIconButton({ icon, otherIcon, text, textClass, ...props }) {
+export default function CUIconButton({ icon, otherIcon, text, textClass = '', ...props }) {
   return (
     <CUButton {...props}>
       {icon && (

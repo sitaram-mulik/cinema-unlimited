@@ -1,0 +1,19 @@
+export default [
+  'English',
+  'Hindi',
+  'Assamese',
+  'Bengali',
+  'Gujarati',
+  'Kannada',
+  'Konkani',
+  'Malayalam',
+  'Manipuri',
+  'Marathi',
+  'Nepali',
+  'Odia',
+  'Punjabi',
+  'Sindhi',
+  'Tamil',
+  'Telugu',
+  'Urdu'
+];

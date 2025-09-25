@@ -1,4 +1,5 @@
-import { LIBRARY_HOST, STORAGE_ZONE } from '../config/constant';
+import { buVideoStreamURL, LIBRARY_HOST, STORAGE_ZONE } from '../config/constant';
+import { isWeb } from './common';
 
 export const generateSignedUrl = () => {
   // usage:
@@ -14,7 +15,9 @@ export const getThumbnailUrl = (videoGuid, thumbnailFileName) => {
 };
 
 export const getVideoUrl = videoGuid => {
-  return `https://${LIBRARY_HOST}/${videoGuid}/playlist.m3u8`;
+  return isWeb
+    ? `${buVideoStreamURL}/${videoGuid}`
+    : `https://${LIBRARY_HOST}/${videoGuid}/playlist.m3u8`;
 };
 
 export const getThumbnailStorageUrl = imagePath => {

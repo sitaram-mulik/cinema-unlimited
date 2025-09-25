@@ -74,7 +74,7 @@ export default function CUFileSelector({ selectOptions, onSelect, documentType }
           />
 
           <CUIconButton
-            className="absolute top-0 left-0 pointer-events-none w-[240px]"
+            className="absolute top-0 left-0 pointer-events-none w-[240px] z-10"
             icon={Upload}
             text="Select"
           />

@@ -1,13 +1,12 @@
 import { X } from 'lucide-react-native';
 import CUIconButton from './CUIconButton';
-import { CUScrollContainer } from './CUScrollContainer';
 import CUHeading from './CUHeading';
 import { View } from 'react-native';
 import { CUText } from './CUText';
 import { useEffect } from 'react';
 import { router } from 'expo-router';
 
-export function CUModal({ title, subtitle, children, footer, preventClose }) {
+export function CUModal({ title, subtitle, children, footer, buttons, preventClose }) {
   useEffect(() => {
     if (!preventClose) return;
     const handleBeforeUnload = e => {
@@ -20,7 +19,6 @@ export function CUModal({ title, subtitle, children, footer, preventClose }) {
   }, [preventClose]);
 
   const closeModal = () => {
-    console.log('window.history ', window.history);
     if (router.canGoBack()) {
       router.back();
     } else {
@@ -28,18 +26,18 @@ export function CUModal({ title, subtitle, children, footer, preventClose }) {
     }
   };
   return (
-    <CUScrollContainer>
-      <CUHeading>{title}</CUHeading>
-      {subtitle && <CUText className="text-lg mb-4">{subtitle}</CUText>}
-      <CUIconButton
-        icon={X}
-        className="absolute right-0 top-0 cursor-pointer z-50"
-        onPress={closeModal}
-      />
-      {children}
-      <View className={`modal-footer fixed bottom-0 w-full left-0 p-2 bg-background`}>
-        {footer}
+    <View className="w-full h-full p-4">
+      <View className={`modal-header fixed top-0 w-full left-0 p-4 bg-background h-24`}>
+        <CUHeading>{title}</CUHeading>
+        {subtitle && <CUText className="text-lg mb-4">{subtitle}</CUText>}
+        <View className="modal-toolbar absolute right-4 top-4 cursor-pointer z-[49] flex flex-row">
+          {buttons}
+          <CUIconButton icon={X} text="Close" onPress={closeModal} />
+        </View>
       </View>
-    </CUScrollContainer>
+      <View className="modal-content mt-32 mb-24">{children}</View>
+
+      <View className={`modal-footer bg-background z-[49]`}>{footer}</View>
+    </View>
   );
 }

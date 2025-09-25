@@ -1,44 +1,19 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import BunnyPlayer from '../../components/BunnyPlayer';
-import { CUText } from '../../components/utilities/CUText';
-import { cuAPI } from '../../config/api';
-import { buVideoStreamURL } from '../../config/constant';
+import VideoScreen from '../../components/VideoScreen';
+import { ScrollView, View } from 'react-native';
+import CUIconButton from '../../components/utilities/CUIconButton';
+import { Check } from 'lucide-react-native';
+import { isMobile } from '../../config/constant';
+import Review from '../../components/moderator/Review';
 
-export default function VideoScreen() {
-  const { id } = useLocalSearchParams();
-  const [videoUrl, setVideoUrl] = useState();
-  const [videoDetails, setVideoDetails] = useState();
-
-  useEffect(() => {
-    cuAPI.get('/videos/' + id).then(res => {
-      const _videoDetails = res.data.data;
-      setVideoDetails(_videoDetails);
-      // console.log("video -> ", _videoDetails);
-      setVideoUrl(`${buVideoStreamURL}/${_videoDetails.guid}?autoplay=false`);
-    });
-  }, [id]);
-
-  // useEffect(() => {
-  //   api.get(`/videos/${id}/url`).then((result) => {
-  //     setVideoUrl(result.data.playUrl);
-  //     console.log("playUrl ", result.data.playUrl);
-  //   });
-  // }, []);
+export default function Video() {
+  const { role, id } = useLocalSearchParams();
+  const Container = isMobile ? ScrollView : View;
 
   return (
-    videoDetails && (
-      <>
-        <BunnyPlayer videoUrl={videoUrl} />
-        <CUText className="text-4xl my-2 flex items-center justify-center">
-          {videoDetails.title}
-        </CUText>
-        {videoDetails.description && (
-          <CUText className="text-md pb-2 flex items-center justify-center">
-            {videoDetails.description}
-          </CUText>
-        )}
-      </>
-    )
+    <Container>
+      <VideoScreen />
+      {role === 'moderator' && <Review id={id} />}
+    </Container>
   );
 }

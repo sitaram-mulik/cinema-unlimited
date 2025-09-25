@@ -35,8 +35,7 @@ export default function NativeVideoPlayer({ videoUrl, ...props }) {
           style={{
             width: isWeb ? '960px' : '100%',
             height: isWeb ? '540px' : 'auto',
-            aspectRatio: 16 / 9,
-            backgroundColor: '#000'
+            aspectRatio: 16 / 9
           }}
         >
           <VideoView

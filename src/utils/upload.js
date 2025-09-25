@@ -1,3 +1,4 @@
+import { uploadStates } from '../config/constant';
 import { categories } from '../constants/video';
 
 // Action types
@@ -10,6 +11,11 @@ export const SET_VIDEO_FILE = 'SET_VIDEO_FILE';
 export const SET_THUMBNAIL_IMAGE = 'SET_THUMBNAIL_IMAGE';
 export const SET_TAGS = 'SET_TAGS';
 export const SET_GENRES = 'SET_GENRES';
+export const SET_LANGUAGES = 'SET_LANGUAGES';
+export const SET_DIRECTORS = 'SET_DIRECTORS';
+export const SET_PRODUCERS = 'SET_PRODUCERS';
+export const SET_CAST = 'SET_CAST';
+export const SET_STUDIO = 'SET_STUDIO';
 export const RESET = 'RESET';
 
 // Initial state
@@ -21,12 +27,17 @@ export const uploadVideoInitialState = {
   category: categories.MOVIE,
   localVideoFile: null,
   localThumbnailFile: null,
-  tags: ['Drama'],
+  tags: [],
   genres: [],
+  languages: ['English'],
   status: 'pending',
   thumbnailFileName: null,
-  version: 0,
-  thumbnailStorageName: null
+  thumbnailStoragePath: null,
+  directors: [],
+  cast: [],
+  producers: [],
+  Studio: '',
+  version: 0
 };
 
 // Reducer function
@@ -56,9 +67,65 @@ export const uploadVideoReducer = (state, action) => {
         ...state,
         genres: action.payload
       };
+    case SET_LANGUAGES:
+      return {
+        ...state,
+        languages: action.payload
+      };
+    case SET_DIRECTORS:
+      return {
+        ...state,
+        directors: action.payload
+      };
+    case SET_PRODUCERS:
+      return {
+        ...state,
+        producers: action.payload
+      };
+    case SET_CAST:
+      return {
+        ...state,
+        cast: action.payload
+      };
+    case SET_STUDIO:
+      return {
+        ...state,
+        studio: action.payload
+      };
     case RESET:
       return { ...state, ...action.payload };
     default:
       return state;
+  }
+};
+
+export const getUploadProgressMessage = uploadState => {
+  switch (uploadState) {
+    case uploadStates.INIT:
+      return 'Started publishing video, please do not cancel or refresh this page...';
+
+    case uploadStates.CREATED:
+      return 'Uploading cover photo...';
+
+    case uploadStates.COVER_UPLOADED:
+      return 'Cover photo uploaded! Uploading video now...';
+
+    case uploadStates.START:
+      return 'Uploading video...';
+
+    case uploadStates.PAUSED:
+      return 'Upload is paused...';
+
+    case uploadStates.VIDEO_UPLOADED:
+      return 'Video is uploaded! Please wait till we finalize some things...';
+
+    case uploadStates.COMPLETE:
+      return 'Congratulations! Your video is published to our server. We will soon review it and make it live!';
+
+    case uploadStates.ERROR:
+      return 'We encountered an error while publishing your video. Please try again!...';
+
+    default:
+      break;
   }
 };

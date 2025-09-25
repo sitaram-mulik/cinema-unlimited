@@ -1,6 +1,5 @@
 export const categories = {
   MOVIE: 'movie',
-  SHORTS: 'shorts',
   SERIES: 'series',
   TRAILER: 'trailer'
 };

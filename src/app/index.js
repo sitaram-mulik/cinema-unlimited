@@ -6,6 +6,7 @@ import Carousel from '../components/Carousel';
 import { useBURequest, useCURequest } from '../hooks/request';
 import BUVideoList from '../components/BUVideoList';
 import {
+  CAROUSEL_HEIGHT,
   RESERVED_COLL_CAROUSAL_NAME,
   RESERVED_COLLECTION_PREFIX,
   reservedCollections
@@ -41,38 +42,38 @@ export default function App() {
   );
 
   return (
-    <View className="cu-home flex-1">
-      <ScrollView>
-        {carouselCollectionId && <Carousel carouselCollectionId={carouselCollectionId} />}
+    <View className="dashboard">
+      <View style={{ height: CAROUSEL_HEIGHT }}>
+        {carouselCollectionId ? <Carousel carouselCollectionId={carouselCollectionId} /> : null}
+      </View>
 
-        <View className="px-6 collections">
-          {recentVideosData?.totalCount > 0 ? (
-            <>
-              <VideoList
-                heading="New"
-                videos={recentVideos}
-                loading={recentVideosLoading}
-                error={recentVideosError}
-              />
-              {buCollections?.map(collection => {
-                return (
-                  <BUVideoList
-                    key={collection?.guid}
-                    collectionId={collection?.guid}
-                    collectionName={collection?.name}
-                  />
-                );
-              })}
-            </>
-          ) : (
-            <CUHeading>
-              Please <CULink href="/create">upload</CULink> some content to get started!
-            </CUHeading>
-          )}
-        </View>
+      <View className="px-6 mt-14 collections">
+        {recentVideosData?.pagination?.totalCount > 0 ? (
+          <>
+            <VideoList
+              heading="New releases"
+              videos={recentVideos}
+              loading={recentVideosLoading}
+              error={recentVideosError}
+            />
+            {buCollections?.map(collection => {
+              return (
+                <BUVideoList
+                  key={collection?.guid}
+                  collectionId={collection?.guid}
+                  collectionName={collection?.name}
+                />
+              );
+            })}
+          </>
+        ) : (
+          <CUHeading>
+            Please <CULink href="/create">upload</CULink> some content to get started!
+          </CUHeading>
+        )}
+      </View>
 
-        <StatusBar style="light" />
-      </ScrollView>
+      <StatusBar style="light" />
     </View>
   );
 }

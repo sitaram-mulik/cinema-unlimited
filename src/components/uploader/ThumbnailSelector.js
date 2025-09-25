@@ -25,7 +25,6 @@ export default function ThumbnailSelector({ updateUploadForm, uploadForm }) {
 
   return (
     <View>
-      <CUHeading>Select Cover</CUHeading>
       <CUFileSelector
         selectOptions={{
           mediaTypes: ['images'],

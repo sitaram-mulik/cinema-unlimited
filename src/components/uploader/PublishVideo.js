@@ -28,13 +28,22 @@ import {
   getThumbnailUrl,
   getVideoUrl
 } from '../../utils/video-player';
+import { getUploadProgressMessage } from '../../utils/upload';
+import { router } from 'expo-router';
+import CUContent from '../utilities/CUContent';
 
-export default function PublishVideo({ uploadForm, isEdit }) {
+export default function PublishVideo({ uploadForm, isEdit, setDisablePrev }) {
   const uploadRef = useRef();
-  const { id: videoId, title, localVideoFile, localThumbnailFile, version } = uploadForm || {};
+  const {
+    id: videoId,
+    title,
+    localVideoFile,
+    localThumbnailFile,
+    version,
+    thumbnailStoragePath
+  } = uploadForm || {};
   const [uploadState, setUploadState] = useState();
   const [uploadError, setUploadError] = useState();
-  const [uploadedUrl, setUploadedUrl] = useState();
   const [uploadProgress, setUploadProgress] = useState(0);
   const { showToast } = useToast();
   console.log('uploadForm ', uploadForm);
@@ -79,7 +88,6 @@ export default function PublishVideo({ uploadForm, isEdit }) {
           setUploadProgress(_progress);
         },
         onSuccess: () => {
-          setUploadedUrl(`${buStreamURL}/${guid}`);
           setUploadState(uploadStates.VIDEO_UPLOADED);
           resolve('Upload finished');
         }
@@ -93,16 +101,16 @@ export default function PublishVideo({ uploadForm, isEdit }) {
   const uploadThumbnail = async guid => {
     try {
       const file = localThumbnailFile.file;
-      const extension = file.name.split('.').pop();
-      const storageImagePath = `${guid}/Cover_${version}.${extension}`;
-
-      const imgUrl = getThumbnailStorageUrl(storageImagePath);
+      //const extension = file.name.split('.').pop();
+      const thumbnailFileNameInStorage = `${guid}/${file.name}`;
+      const newThumbnailStoragePath = getThumbnailStorageUrl(thumbnailFileNameInStorage);
 
       // delete older thumbnail if exists
       if (version > 0) {
         try {
-          const prevStorageImagePath = `${guid}/Cover_${version - 1}.${extension}`;
-          await buAPI.delete(getThumbnailStorageUrl(prevStorageImagePath), {
+          // const prevStorageImagePath = `${guid}/Cover_${version - 1}.${extension}`;
+          const prevStorageImagePath = thumbnailStoragePath;
+          await buAPI.delete(prevStorageImagePath, {
             headers: {
               AccessKey: STORAGE_WRITE_KEY
             }
@@ -111,7 +119,7 @@ export default function PublishVideo({ uploadForm, isEdit }) {
       }
 
       // Upload image to storage
-      await buAPI.put(imgUrl, file, {
+      await buAPI.put(newThumbnailStoragePath, file, {
         headers: {
           AccessKey: STORAGE_WRITE_KEY,
           'Content-Type': file.type
@@ -119,7 +127,7 @@ export default function PublishVideo({ uploadForm, isEdit }) {
       });
 
       // Link thumbnail to video
-      const thumbnailCDNUrl = getThumbnailCDNUrl(storageImagePath);
+      const thumbnailCDNUrl = getThumbnailCDNUrl(thumbnailFileNameInStorage);
       await buAPI.post('/videos/' + guid + '/thumbnail?thumbnailUrl=' + thumbnailCDNUrl);
 
       // purge stale cache
@@ -130,7 +138,8 @@ export default function PublishVideo({ uploadForm, isEdit }) {
       const updatedVideoData = await cuAPI.get('/videos/' + guid);
       const updatedThumbnailFileName = updatedVideoData?.data?.data?.thumbnailFileName;
       await cuAPI.patch('/videos/' + guid, {
-        thumbnailFileName: updatedThumbnailFileName
+        thumbnailFileName: updatedThumbnailFileName,
+        thumbnailStoragePath: newThumbnailStoragePath
       });
 
       setUploadState(uploadStates.COVER_UPLOADED);
@@ -151,8 +160,6 @@ export default function PublishVideo({ uploadForm, isEdit }) {
   };
 
   const handleSubmit = async () => {
-    let isEror = false;
-
     if (!title.trim()) {
       isEror = true;
       showToast('Please select a Video title!');
@@ -170,12 +177,24 @@ export default function PublishVideo({ uploadForm, isEdit }) {
     }
 
     setUploadState(uploadStates.INIT);
+    setDisablePrev(true);
 
     let result;
 
     try {
-      const { id, category, collectionId, description, tags, thumbnailFileName, genres } =
-        uploadForm || {};
+      const {
+        id,
+        category,
+        collectionId,
+        description,
+        tags,
+        directors,
+        producers,
+        cast,
+        languages,
+        studio,
+        genres
+      } = uploadForm || {};
       const isUpdatingVideo = isEdit && localVideoFile;
       const isNewVideo = !isEdit || isUpdatingVideo;
       if (isNewVideo) {
@@ -189,6 +208,11 @@ export default function PublishVideo({ uploadForm, isEdit }) {
           description,
           tags,
           genres,
+          directors,
+          producers,
+          cast,
+          languages,
+          studio,
           status: videoStatus.PENDING
         });
       } else {
@@ -199,6 +223,11 @@ export default function PublishVideo({ uploadForm, isEdit }) {
           description,
           tags,
           genres,
+          directors,
+          producers,
+          cast,
+          languages,
+          studio,
           status: videoStatus.PENDING,
           version: version + 1
         });
@@ -220,7 +249,9 @@ export default function PublishVideo({ uploadForm, isEdit }) {
       setUploadState(uploadStates.ERROR);
     } finally {
       setUploadState(uploadStates.COMPLETE);
+      setDisablePrev(false);
       showToast('Video published successfully!');
+      router.navigate('/account/channel?status=drafts');
     }
   };
 
@@ -228,7 +259,6 @@ export default function PublishVideo({ uploadForm, isEdit }) {
     if (uploadRef.current) {
       uploadRef.current.abort();
       setUploadState(uploadStates.PAUSED);
-      console.log('Upload paused');
     }
   };
 
@@ -236,87 +266,47 @@ export default function PublishVideo({ uploadForm, isEdit }) {
     if (uploadRef.current) {
       uploadRef.current.start();
       setUploadState(uploadStates.START);
-      console.log('Upload resumed');
     }
   };
 
-  const progressMessage = useMemo(() => {
-    switch (uploadState) {
-      case uploadStates.INIT:
-        return 'Started publishing video, please do not cancel or refresh this page...';
-
-      case uploadStates.CREATED:
-        return 'Uploading cover photo...';
-
-      case uploadStates.COVER_UPLOADED:
-        return 'Cover photo uploaded! Uploading video now...';
-
-      case uploadStates.START:
-        return 'Uploading...';
-
-      case uploadStates.PAUSED:
-        return 'Upload is paused...';
-
-      case uploadStates.VIDEO_UPLOADED:
-        return 'Video is uploaded! Please wait till we finalize some things...';
-
-      case uploadStates.COMPLETE:
-        return 'Congratulations! Your video is published to our server. We will soon review it and make it live!';
-
-      case uploadStates.ERROR:
-        return 'We encountered an error while publishing your video. Please try again!...';
-
-      default:
-        break;
-    }
-  }, [uploadState]);
-
-  console.log('progressMessage ', uploadProgress);
+  const progressMessage = useMemo(() => getUploadProgressMessage(uploadState), [uploadState]);
 
   return (
-    <ScrollView className="p-4">
-      <View className="p-2 mb-4">
-        <CUHeading>
-          {!uploadState
-            ? 'Ready to Publish!'
-            : uploadState === uploadStates.COMPLETE
-              ? 'Your video is published!'
-              : 'Publishing your video...'}
-        </CUHeading>
-        <CUText className="text-gray-300 mb-4">
-          {progressMessage
-            ? progressMessage
-            : 'You can review your video details by going back and click on the "Publish Video" button to Publish your video.'}
-        </CUText>
-        <View className="button-groups mt-4">
-          {!uploadState && (
-            <CUIconButton onPress={handleSubmit} text="Publish" icon={CloudUpload} />
-          )}
-          {uploadState === uploadStates.START && <CUProgress progress={uploadProgress} />}
-          {uploadState === uploadStates.START && (
-            <CUIconButton
-              icon={Pause}
-              onPress={pauseUpload}
-              text="Pause"
-              textClass="text-sm"
-              className="max-w-[100px]"
-            />
-          )}
+    <CUContent>
+      {/* <CUHeading>
+        {!uploadState
+          ? 'Lets upload your content!'
+          : uploadState === uploadStates.COMPLETE
+            ? 'Your video is published!'
+            : 'Upload in progress, dont refresh the page.'}
+      </CUHeading> */}
+      {progressMessage && <CUText className="text-lg mb-4">{progressMessage}</CUText>}
+      <View className="button-groups mt-4">
+        {!uploadState && <CUIconButton onPress={handleSubmit} text="Upload" icon={CloudUpload} />}
+        {uploadState === uploadStates.START && <CUProgress progress={uploadProgress} />}
+        {uploadState === uploadStates.START && (
+          <CUIconButton
+            icon={Pause}
+            onPress={pauseUpload}
+            text="Pause"
+            textClass="text-sm"
+            className="max-w-[100px]"
+          />
+        )}
 
-          {(uploadState === uploadStates.PAUSED || uploadState === uploadStates.ERROR) && (
-            <CUIconButton
-              icon={Play}
-              onPress={resumeUpload}
-              text="Resume"
-              textClass="text-sm"
-              className="max-w-[100px]"
-            />
-          )}
+        {(uploadState === uploadStates.PAUSED || uploadState === uploadStates.ERROR) && (
+          <CUIconButton
+            icon={Play}
+            onPress={resumeUpload}
+            text="Resume"
+            textClass="text-sm"
+            className="max-w-[100px]"
+          />
+        )}
 
-          {uploadState === uploadStates.ERROR && <CUError error={uploadError} />}
-        </View>
+        {uploadState === uploadStates.ERROR && <CUError error={uploadError} />}
       </View>
-    </ScrollView>
+    </CUContent>
   );
 }
 

@@ -1,26 +1,21 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Dimensions,
-  ActivityIndicator
-} from 'react-native';
+import React, { useCallback, useRef, useState } from 'react';
+import { View, Image, TouchableOpacity, Text, Dimensions } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import { getThumbnailUrl } from '../utils/video-player';
-import { CUText } from './utilities/CUText';
 import CUError from './utilities/CUError';
 import CULoader from './utilities/CULoader';
-import { cuAPI } from '../config/api';
 import { useBURequest } from '../hooks/request';
-import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import CUGradient from './utilities/CUGradient';
+import { CAROUSEL_HEIGHT, isWeb } from '../config/constant';
+import VideoOverlay from './VideoOverlay';
+import { CUText } from './utilities/CUText';
+import CUIcon from './utilities/CUICon';
+import { ArrowLeft, ChevronLeft, ChevronRight, ChevronsLeft } from 'lucide-react-native';
 
 const { width } = Dimensions.get('window');
-const ITEM_HEIGHT = width * 0.56;
+const ITEM_HEIGHT = isWeb ? CAROUSEL_HEIGHT : width * 0.56;
 
-export default function Carousel({ carouselCollectionId }) {
+export default function CarouselComponent({ carouselCollectionId }) {
   const {
     data: videosData,
     loading,
@@ -28,101 +23,92 @@ export default function Carousel({ carouselCollectionId }) {
   } = useBURequest({
     url: `/videos?collection=${carouselCollectionId}`
   });
+
+  const videos = videosData?.items || [];
   const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollViewRef = useRef(null);
-  const autoScrollInterval = useRef(null);
+  const carouselRef = useRef(null);
 
-  const videos = videosData?.items;
-  useEffect(() => {
-    if (videos?.length > 1) {
-      // Start auto-scrolling
-      autoScrollInterval.current = setInterval(() => {
-        setCurrentIndex(prevIndex => {
-          const nextIndex = (prevIndex + 1) % videos.length;
-          scrollViewRef.current?.scrollTo({
-            x: nextIndex * width,
-            animated: true
-          });
-          return nextIndex;
-        });
-      }, 4000); // Change slide every 4 seconds
+  const renderItem = useCallback(
+    ({ item, index }) => {
+      const url = getThumbnailUrl(item.guid, item.thumbnailFileName);
+      return (
+        <TouchableOpacity
+          key={item.id?.toString() || index.toString()}
+          className="w-full"
+          style={{ height: ITEM_HEIGHT }}
+          onPress={() => router.push(`/video/${item.guid}`)}
+        >
+          <Image
+            source={{ uri: url }}
+            style={{ height: ITEM_HEIGHT }}
+            className="w-full self-end"
+            resizeMode="contain"
+          />
+          <VideoOverlay hideAfter={null} />
+          <VideoOverlay hideAfter={null} direction="bottom" />
+        </TouchableOpacity>
+      );
+    },
+    [videos]
+  );
 
-      return () => {
-        if (autoScrollInterval.current) {
-          clearInterval(autoScrollInterval.current);
-        }
-      };
-    }
-  }, [videos?.length]);
+  const handleArrowPress = direction => {
+    const nextIndex =
+      direction === 'left'
+        ? (currentIndex - 1 + videos.length) % videos.length
+        : (currentIndex + 1) % videos.length;
 
-  const handleScroll = event => {
-    const contentOffset = event.nativeEvent.contentOffset;
-    const index = Math.round(contentOffset.x / width);
-    setCurrentIndex(index);
+    setCurrentIndex(nextIndex);
+    carouselRef.current?.scrollTo({ index: nextIndex, animated: true });
   };
 
-  const handleManualScroll = event => {
-    // Clear auto-scroll when user manually scrolls
-    if (autoScrollInterval.current) {
-      clearInterval(autoScrollInterval.current);
-    }
-    handleScroll(event);
-  };
-
-  if (loading) {
-    return <CULoader />;
-  }
-
-  if (error) {
-    return <CUError error={error} />;
-  }
-
-  if (!videos?.length) {
-    return null;
-  }
+  if (loading) return <CULoader />;
+  if (error) return <CUError error={error} />;
+  if (!videos || videos.length === 0) return null;
 
   return (
-    <View className="mb-6">
-      <ScrollView
-        ref={scrollViewRef}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onScroll={handleManualScroll}
-        scrollEventThrottle={16}
-        className="px-0"
-      >
-        {videos.map((item, index) => {
-          const url = getThumbnailUrl(item.guid, item.thumbnailFileName);
-          return (
-            <TouchableOpacity
-              key={item.id?.toString() || index.toString()}
-              className="relative"
-              onPress={() => router.push(`/video/${item.guid}`)}
-            >
-              <Image
-                source={{ uri: url }}
-                style={{
-                  width: width,
-                  height: ITEM_HEIGHT
-                }}
-                className="rounded-none"
-                resizeMode="cover"
-              />
-              <CUText>{item?.title}</CUText>
-              {/* <CUGradient /> */}
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+    <View className="relative">
+      {/* Carousel with arrows */}
+      <View className="flex-row items-center justify-center">
+        {/* Left arrow */}
+        <TouchableOpacity
+          className="left-arrow z-10 h-full justify-center items-center absolute left-24"
+          onPress={() => handleArrowPress('left')}
+          accessibilityLabel="Previous Slide"
+        >
+          {/* <CUText className="arrow-left text-white text-4xl">{'<'}</CUText> */}
+          <CUIcon icon={ChevronLeft} size={64} />
+        </TouchableOpacity>
+
+        <Carousel
+          ref={carouselRef}
+          width={width}
+          height={ITEM_HEIGHT}
+          data={videos}
+          renderItem={renderItem}
+          autoPlay={true}
+          autoPlayInterval={5000}
+          loop={true}
+          onSnapToItem={index => setCurrentIndex(index)}
+        />
+
+        {/* Right arrow */}
+        <TouchableOpacity
+          className="z-10 h-full justify-center items-center absolute right-24"
+          onPress={() => handleArrowPress('right')}
+          accessibilityLabel="Next Slide"
+        >
+          <CUIcon icon={ChevronRight} size={64} />
+        </TouchableOpacity>
+      </View>
 
       {/* Pagination dots */}
       <View className="flex-row justify-center items-center mt-4 space-x-2">
-        {videos.map((v, index) => (
+        {videos.map((v, idx) => (
           <View
             key={v.guid}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex ? 'bg-white w-6' : 'bg-gray-500'
+            className={`w-2 h-2 rounded-full ${
+              currentIndex === idx ? 'bg-white w-4' : 'bg-gray-500'
             }`}
           />
         ))}
