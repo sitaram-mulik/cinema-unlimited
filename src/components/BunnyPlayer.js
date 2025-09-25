@@ -1,25 +1,27 @@
 import { WebView } from 'react-native-webview';
-import { View, StyleSheet, Dimensions, useWindowDimensions } from 'react-native';
-import { isWeb } from '../config/constant';
+import { View, StyleSheet, Dimensions, useWindowDimensions, Platform } from 'react-native';
+import { isMobile, isWeb } from '../config/constant';
 
 export default function BunnyPlayer({ videoUrl, autoplay = false, fullwidth = false }) {
   const { width } = useWindowDimensions();
-  const playerWidth = isWeb && !fullwidth ? 1000 : width; // adjust padding/margin
-  const playerHeight = (playerWidth * 9) / 16;
+  const playerWidth = isMobile || fullwidth ? width : 1000; // adjust padding/margin
+
+  const playerHeight = playerWidth * (9 / 16);
+  console.log('playerWidth ', playerHeight);
 
   if (!videoUrl) return null;
 
-  const uri = `${videoUrl}?autoplay=${autoplay}&ui=c`;
+  const uri = `${videoUrl}?autoplay=${autoplay}`;
 
   return (
     <View
-      className="bunny-video-player-wrapper relative"
+      className="bunny-video-player-wrapper relative top-0"
       style={{ width: playerWidth, height: playerHeight }}
     >
       {/* The top gradient overlay. This sits over the header area.
         The "bg-gradient-to-b" class creates a black-to-transparent effect.
       */}
-      {isWeb ? (
+      {Platform.OS === 'web' ? (
         <iframe
           src={uri}
           width={playerWidth}
@@ -31,6 +33,10 @@ export default function BunnyPlayer({ videoUrl, autoplay = false, fullwidth = fa
       ) : (
         <WebView
           source={{ uri }}
+          style={{
+            width: playerWidth,
+            height: playerHeight
+          }}
           className="h-full w-full"
           allowsFullscreenVideo
           javaScriptEnabled

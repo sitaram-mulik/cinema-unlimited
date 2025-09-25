@@ -31,12 +31,13 @@ export const catNav = [
 ];
 
 const { width } = Dimensions.get('window');
-export const CONTAINER_WIDTH = 1700;
-export const CAROUSEL_HEIGHT = 700;
 
 export const isMobile = !Platform.isTV && (Platform.OS !== 'web' || width < 768);
 
-export const isWeb = Platform.isTV || Platform.OS === 'web';
+export const isWeb = Platform.isTV || (Platform.OS === 'web' && width > 768);
+
+export const CONTAINER_WIDTH = 1700;
+export const CAROUSEL_HEIGHT = isWeb ? 700 : 240;
 
 export const uploadStates = {
   INIT: 'PUBLISHING_STARTED',

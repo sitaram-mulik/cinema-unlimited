@@ -8,19 +8,20 @@ import { CONTAINER_WIDTH, isMobile, isWeb, PRODUCT_NAME } from '../config/consta
 import CUIcon from './utilities/CUICon';
 import MainNav from './utilities/MainNav';
 
-const excludeHeaders = ['create', 'search'];
+const excludeHeaders = ['create', 'search', 'video/[id]'];
 
 export default function Header({ isScrolled }) {
   const segments = useSegments();
   const isHome = segments.length === 0;
   const currentPath = segments.join('/');
+  console.log('currentPath ', currentPath);
 
   return excludeHeaders.includes(currentPath) ? null : isMobile ? (
     <SafeAreaView
       edges={['top', 'left', 'right']}
-      className={`header absolute top-0 left-0 z-[50] m-auto overflow-hidden`}
+      className={`header fixed top-0 left-0 z-[50] m-auto overflow-hidden w-full`}
     >
-      <View className={`w-full ${isMobile ? 'bg-background p-4' : 'fixed w-full p-8'}`}>
+      <View className={`w-full p-4`}>
         <MainNav isHome={isHome} />
       </View>
     </SafeAreaView>

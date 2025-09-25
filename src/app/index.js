@@ -7,15 +7,13 @@ import { useBURequest, useCURequest } from '../hooks/request';
 import BUVideoList from '../components/BUVideoList';
 import {
   CAROUSEL_HEIGHT,
+  isWeb,
   RESERVED_COLL_CAROUSAL_NAME,
   RESERVED_COLLECTION_PREFIX,
   reservedCollections
 } from '../config/constant';
 import { useMemo } from 'react';
-import { CUContainer } from '../components/utilities/CUContainer';
-import { CUScrollContainer } from '../components/utilities/CUScrollContainer';
 import CUHeading from '../components/utilities/CUHeading';
-import { Link } from 'expo-router';
 import { CULink } from '../components/utilities/CULink';
 
 export default function App() {
@@ -47,7 +45,7 @@ export default function App() {
         {carouselCollectionId ? <Carousel carouselCollectionId={carouselCollectionId} /> : null}
       </View>
 
-      <View className="px-6 mt-14 collections">
+      <View className={`px-6 collections ${isWeb ? 'mt-14' : 'mt-0'}`}>
         {recentVideosData?.pagination?.totalCount > 0 ? (
           <>
             <VideoList

@@ -1,5 +1,6 @@
 import { View } from 'react-native';
 import { CUText } from './CUText';
+import { isWeb } from '../../config/constant';
 
 export default function CUDetailList({ properties = {} }) {
   const keys = Object.keys(properties);
@@ -24,8 +25,12 @@ export default function CUDetailList({ properties = {} }) {
     <View className=" divide-y divide-gray-200 text-sm max-w-[1000px] m-4 ">
       {keys.map(key => (
         <View className="grid grid-cols-1 gap-1 py-3 sm:grid-cols-3 sm:gap-4 p-4 border-none">
-          <CUText className="text-primary font-medium text-xl">{key}</CUText>
-          <CUText className="text-primary sm:col-span-2  text-xl">{renderValue(key)}</CUText>
+          <CUText className={`text-primary font-medium ${isWeb ? 'text-xl' : 'text-md'}`}>
+            {key}
+          </CUText>
+          <CUText className={`text-primary sm:col-span-2  ${isWeb ? 'text-xl' : 'text-md'}`}>
+            {renderValue(key)}
+          </CUText>
         </View>
       ))}
     </View>

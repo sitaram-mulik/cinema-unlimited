@@ -14,6 +14,9 @@ export default function Layout() {
   const currentPath = segments.join('/');
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const noTopMarginWeb = ['create', '', 'video/[id]', 'search'].includes(currentPath);
+  const noTopMarginMobile = ['create', 'video/[id]', 'search'].includes(currentPath);
+
   let [fontsLoaded] = useFonts({
     'Microgramma-Bold': require('../../assets/fonts/Microgramma-D-Extended-Bold.otf'),
     'Microgramma-Medium': require('../../assets/fonts/Microgramma-D-Extended-Medium.otf')
@@ -22,7 +25,13 @@ export default function Layout() {
   if (!fontsLoaded) {
     return <AppLoading />;
   }
-  const noTopMargin = ['create', '', 'video/[id]', 'search'].includes(currentPath);
+
+  const getTopMargin = () => {
+    if (isMobile) {
+      return noTopMarginMobile ? 0 : 80;
+    }
+    return noTopMarginWeb ? 0 : 60;
+  };
 
   return (
     <View
@@ -34,7 +43,7 @@ export default function Layout() {
           <Header isScrolled={isScrolled} />
           <ScrollView
             style={{
-              marginTop: noTopMargin ? 0 : isMobile ? 130 : 60,
+              marginTop: getTopMargin(),
               flex: 1
             }}
             contentContainerStyle={{
@@ -54,9 +63,8 @@ export default function Layout() {
                 flex: 1
               }}
             />
-
-            {isMobile && <BottomNav />}
           </ScrollView>
+          {isMobile && <BottomNav />}
         </GestureHandlerRootView>
       </ToastProvider>
     </View>

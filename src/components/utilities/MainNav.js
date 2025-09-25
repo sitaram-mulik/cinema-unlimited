@@ -1,10 +1,8 @@
 import { Image, TouchableOpacity, View } from 'react-native';
-import { CUText } from './CUText';
-import { isWeb, PRODUCT_NAME } from '../../config/constant';
+import { isWeb } from '../../config/constant';
 import { router } from 'expo-router';
 import CUIcon from './CUICon';
 import { CircleUserRoundIcon, Search } from 'lucide-react-native';
-import CUSearch from './CUSearch';
 
 export default function MainNav({ isHome }) {
   return (
@@ -26,16 +24,14 @@ export default function MainNav({ isHome }) {
       </View>
 
       <View className="flex-row flex-1 items-center justify-end">
-        <TouchableOpacity onPress={() => router.push('/search')}>
-          <CUIcon icon={Search} />
-        </TouchableOpacity>
+        {isWeb && (
+          <TouchableOpacity onPress={() => router.push('/search')}>
+            <CUIcon icon={Search} />
+          </TouchableOpacity>
+        )}
 
-        <TouchableOpacity onPress={() => router.push('/account/profile')} className="ml-4">
-          <CUIcon
-            icon={CircleUserRoundIcon}
-            size={28}
-            className="bg-backgroundSecondary rounded-2xl"
-          />
+        <TouchableOpacity onPress={() => isWeb && router.push('/account/profile')} className="ml-4">
+          <CUIcon icon={CircleUserRoundIcon} size={28} />
         </TouchableOpacity>
       </View>
     </View>

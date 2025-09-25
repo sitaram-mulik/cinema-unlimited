@@ -71,14 +71,16 @@ export default function CarouselComponent({ carouselCollectionId }) {
       {/* Carousel with arrows */}
       <View className="flex-row items-center justify-center">
         {/* Left arrow */}
-        <TouchableOpacity
-          className="left-arrow z-10 h-full justify-center items-center absolute left-24"
-          onPress={() => handleArrowPress('left')}
-          accessibilityLabel="Previous Slide"
-        >
-          {/* <CUText className="arrow-left text-white text-4xl">{'<'}</CUText> */}
-          <CUIcon icon={ChevronLeft} size={64} />
-        </TouchableOpacity>
+        {isWeb && (
+          <TouchableOpacity
+            className="left-arrow z-10 h-full justify-center items-center absolute left-24"
+            onPress={() => handleArrowPress('left')}
+            accessibilityLabel="Previous Slide"
+          >
+            {/* <CUText className="arrow-left text-white text-4xl">{'<'}</CUText> */}
+            <CUIcon icon={ChevronLeft} size={64} />
+          </TouchableOpacity>
+        )}
 
         <Carousel
           ref={carouselRef}
@@ -93,13 +95,15 @@ export default function CarouselComponent({ carouselCollectionId }) {
         />
 
         {/* Right arrow */}
-        <TouchableOpacity
-          className="z-10 h-full justify-center items-center absolute right-24"
-          onPress={() => handleArrowPress('right')}
-          accessibilityLabel="Next Slide"
-        >
-          <CUIcon icon={ChevronRight} size={64} />
-        </TouchableOpacity>
+        {isWeb && (
+          <TouchableOpacity
+            className="z-10 h-full justify-center items-center absolute right-24"
+            onPress={() => handleArrowPress('right')}
+            accessibilityLabel="Next Slide"
+          >
+            <CUIcon icon={ChevronRight} size={64} />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Pagination dots */}

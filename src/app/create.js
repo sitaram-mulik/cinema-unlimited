@@ -128,8 +128,7 @@ export default function Create() {
         <CUIconButton
           icon={Trash}
           onPress={() => setShowDeleteDialog(true)}
-          text="Delete"
-          className="mr-4"
+          className="mr-2 bg-transparent"
         />
       )
     );

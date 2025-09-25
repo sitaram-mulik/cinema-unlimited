@@ -9,6 +9,7 @@ import { View } from 'react-native';
 import VideoOverlay from './VideoOverlay';
 import CUFitVideo from './utilities/CUFitVideo';
 import CUDetailList from './utilities/CUDetailList';
+import { isWeb } from '../config/constant';
 
 const excludeVideoProperties = ['guid', 'length', 'thumbnailCount', 'transcodingMessages'];
 
@@ -41,12 +42,14 @@ export default function VideoScreen() {
       <View className="flex justify-center flex-column align-center w-full">
         <CUFitVideo>
           <BunnyPlayer videoUrl={videoUrl} fullwidth autoplay={true} />
-          <VideoOverlay>
-            <CUText className="text-4xl my-2">{videoDetails.title}</CUText>
-            {videoDetails.description && (
-              <CUText className="text-xl pb-2">{videoDetails.description}</CUText>
-            )}
-          </VideoOverlay>
+          {isWeb && (
+            <VideoOverlay>
+              <CUText className="text-4xl my-2">{videoDetails.title}</CUText>
+              {videoDetails.description && (
+                <CUText className="text-xl pb-2">{videoDetails.description}</CUText>
+              )}
+            </VideoOverlay>
+          )}
         </CUFitVideo>
         <View className="mt-4">
           <CUDetailList properties={videoProperties} />

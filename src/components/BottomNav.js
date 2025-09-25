@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { Home, HomeIcon, Upload, Video } from 'lucide-react-native';
+import { Home, HomeIcon, Search, Upload, Video } from 'lucide-react-native';
 import { useRouter, useSegments } from 'expo-router';
 import CUIcon from './utilities/CUICon';
 
@@ -9,11 +9,11 @@ export default function BottomNav() {
 
   const tabs = [
     { label: 'Home', icon: HomeIcon, route: '/' },
-    { label: 'Create', icon: Video, route: '/create' }
+    { label: 'Search', icon: Search, route: '/search' }
   ];
 
   return (
-    <View className="flex-row h-24 items-center justify-around px-4 pb-8">
+    <View className="flex-row items-center justify-around px-4 pb-8">
       {tabs.map(tab => {
         const isActive = segments[0] === tab.route.replace('/', '');
         return (

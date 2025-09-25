@@ -11,13 +11,13 @@ import api, { cuAPI } from '../config/api';
 import { getThumbnailUrl } from '../utils/video-player';
 import { CUText } from './utilities/CUText';
 import { Link, router } from 'expo-router';
-import { isMobile, LIBRARY_ID } from '../config/constant';
+import { isMobile, isWeb, LIBRARY_ID } from '../config/constant';
 import CUError from './utilities/CUError';
 import CULoader from './utilities/CULoader';
 import CUContentPlaceholder from './utilities/CUContentPlaceholder';
 
 const { width } = Dimensions.get('window');
-const ITEM_WIDTH = width * 0.15; // 27.5% of screen width for each item
+const ITEM_WIDTH = width * (isWeb ? 0.15 : 0.35); // 27.5% of screen width for each item
 const ITEM_HEIGHT = ITEM_WIDTH * (9 / 16); // 2:3 portrait
 
 export default function VideoList({ heading, videos, loading, error }) {

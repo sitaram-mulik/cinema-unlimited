@@ -5,8 +5,9 @@ import { View } from 'react-native';
 import { CUText } from './CUText';
 import { useEffect } from 'react';
 import { router } from 'expo-router';
+import { isWeb } from '../../config/constant';
 
-export function CUModal({ title, subtitle, children, footer, buttons, preventClose }) {
+export function CUModal({ title, subtitle, children, footer, buttons, preventClose, className }) {
   useEffect(() => {
     if (!preventClose) return;
     const handleBeforeUnload = e => {
@@ -26,13 +27,17 @@ export function CUModal({ title, subtitle, children, footer, buttons, preventClo
     }
   };
   return (
-    <View className="w-full h-full p-4">
-      <View className={`modal-header fixed top-0 w-full left-0 p-4 bg-background h-24`}>
+    <View className={`w-full h-full p-4 ${className}`}>
+      <View
+        className={`modal-header fixed top-0 w-full left-0 right-0 p-4 bg-background m-auto ${isWeb ? 'h-24' : ''}`}
+      >
         <CUHeading>{title}</CUHeading>
         {subtitle && <CUText className="text-lg mb-4">{subtitle}</CUText>}
-        <View className="modal-toolbar absolute right-4 top-4 cursor-pointer z-[49] flex flex-row">
+        <View
+          className={`modal-toolbar absolute cursor-pointer z-[49] flex flex-row ${isWeb ? 'top-4 right-4' : 'top-1 right-1'}`}
+        >
           {buttons}
-          <CUIconButton icon={X} text="Close" onPress={closeModal} />
+          <CUIconButton icon={X} onPress={closeModal} className="bg-transparent" />
         </View>
       </View>
       <View className="modal-content mt-32 mb-24">{children}</View>

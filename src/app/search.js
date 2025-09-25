@@ -7,7 +7,7 @@ import { CUText } from '../components/utilities/CUText';
 
 export default function Search() {
   return (
-    <CUModal>
+    <CUModal className="w-full m-auto">
       <View className="flex-row items-center justify-center text-md mb-2">
         <CUText className="text-2xl mb-0 font-microgrammaBold">Search on</CUText>
         <Image
